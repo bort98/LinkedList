@@ -1,0 +1,234 @@
+package adt;
+
+import static org.junit.Assume.assumeNoException;
+
+import java.lang.reflect.Array;
+
+public class LinkedList<E> implements List<E> {
+	private Node<E> head;
+	private Node<E> tail;
+	int size;
+
+	public LinkedList() {
+		size = 0;
+		head = new Node<E>(null);
+		tail = new Node<E> (null);
+		head.next = tail;
+		tail.prev = head;
+	}
+
+	/**
+	 * adds an element to the end of the list
+	 */
+	public boolean add(E e) {
+		add(size+1, e);
+		return true;
+	}
+
+	/**
+	 * adds an element at given index
+	 */
+	public void add(int index, E element) throws IndexOutOfBoundsException {
+		if(index<0||index>size+1){
+			throw new IndexOutOfBoundsException("index out of bounds");
+		}
+		Node<E> toAdd = new Node<> (element);
+		if(index == 0) {
+			toAdd.next = head;
+			head = toAdd;		
+		}
+		else {
+			Node<E> hopper = head;
+			while(--index > 0) {
+				hopper = hopper.next;
+			}
+			toAdd.next = hopper.next;
+			hopper.next = toAdd;
+		}
+		size++;
+	}
+
+	/**
+	 * clears the list
+	 */
+	public void clear() {
+		head = null;
+		size=0;
+	}
+
+	/**
+	 * checks to see if list contains object 
+	 */
+	public boolean contains(Object o) {
+		return indexOf(o) != -1;
+	}
+
+	/**
+	 * gets the element at an index 
+	 */
+	public E get(int index)throws IndexOutOfBoundsException {
+		if(index<0||index>size-1){
+			throw new IndexOutOfBoundsException("index out of bounds");
+		}
+		Node<E> hopper = head;
+		for(int i = 0; i < index; i++)
+			hopper = hopper.next;
+		return hopper.data;
+	}
+
+	/**
+	 * returns index of objects first occurrence returns -1 if not found
+	 */
+	public int indexOf(Object o) {
+		int index = 0;
+		Node<E> hopper = head;
+		if(o == null){
+			for(int i = 0; i < size; i++){
+				if(hopper.data == o){
+					return i;
+				}
+			}
+		}
+		else if(o != null){
+			for(int i= 0; i<size; i++) {
+				if(hopper.equals(o)) {
+					return index;
+				}
+				index ++;
+				hopper = hopper.next;
+			}
+		}
+		return index-1;
+	}
+
+	/**
+	 * checks if list is empty
+	 */
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
+	/**
+	 * returns the index of the first occurrence of 
+	 * the specified element in this list returns -1 if not found
+	 */
+	public int lastIndexOf(Object o) {
+		Node<E> hopper = head;
+		int count = -1;
+		if(o == null) {
+			for(int i = 0; i < size; i++) {
+				if(hopper.data == o) {
+					return count;
+				}
+				count ++;	
+			}
+		}
+		for(int i = 0; i < size; i++) {
+			if(hopper.equals(o)) {
+				return count;
+			}
+			count ++;
+			hopper = hopper.next;
+		}
+		return count;
+	}
+
+	/**
+	 * gets a node at specific index
+	 */
+	private Node<E> getNode(int index){
+		Node<E> ref;
+		if(index < size/2) {
+			ref = head;
+			for(int i = 0; i < index; i++){
+				ref = ref.next;
+			}
+		}
+		else {
+			ref = tail;
+			for(int i = size; i > index; i--){
+				ref = ref.prev;
+			}
+		}
+		return ref;
+	}
+
+	/**
+	 * Removes element at index
+	 */
+	public E remove(int index) throws IndexOutOfBoundsException {
+		if(index<0||index > size){
+			throw new IndexOutOfBoundsException("index out of bounds");
+		}
+		if(index == 0) {
+			E temp = head.data;
+			if(head.next == head) {
+				head = null;
+				size = 0;
+				return temp;
+			}
+			head = head.next;
+			size--;
+			return temp;
+
+		}
+		Node<E> ref = getNode(index);
+		E temp = ref.data;
+		ref.next = ref.next.next;
+		size--;
+		return temp;
+	}
+
+
+
+	/**
+	 * removes specific object
+	 */
+	public boolean remove(Object o) {
+		int index = indexOf(o);
+		if(index == -1) {
+			return false;
+		}
+		Node<E> ref = getNode(index);
+		ref.next = ref.next.next;
+		size --;
+		return true;		
+	}
+
+	/**
+	 * sets element at specific index
+	 */
+	public E set(int index, E element)throws IndexOutOfBoundsException {
+		if(index<0||index> size){
+			throw new IndexOutOfBoundsException("index out of bounds");
+		}
+		Node<E> hopper = head;
+		for(int i = 0; i < index; i++) {
+			hopper = head.next;
+		}
+		E oldValue = hopper.data;
+		hopper.data = element;
+		return oldValue;
+	}
+
+	/**
+	 * returns size of list
+	 */
+	public int size() {
+		return size;
+	}
+
+	/**
+	 * returns an array containing all elements in the list in correct order
+	 */
+	public Object[] toArray() {
+		Node<E> hopper = head;
+		Object[] temp = new Array[size];
+		for(int i = 0; i < size; i++) {
+			hopper = hopper.next;
+			temp[i] = hopper.data;
+		}
+		return temp;
+	}
+
+}
